@@ -1,3 +1,5 @@
+// MARIA MAGDELENA MASAN
+
 #include "Item.h"
 using namespace std;
 

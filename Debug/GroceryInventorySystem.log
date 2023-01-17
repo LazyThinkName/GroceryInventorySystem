@@ -1,2 +1,4 @@
 ﻿  Main.cpp
+D:\mangy\Documents\Sem 3\Data Structure and Algorithm\program\GroceryInventorySystem\Main.cpp(190,25): warning C4018: '<': signed/unsigned mismatch
+D:\mangy\Documents\Sem 3\Data Structure and Algorithm\program\GroceryInventorySystem\List.h(58): warning C4715: 'List<Item>::binarySearch': not all control paths return a value
   GroceryInventorySystem.vcxproj -> D:\mangy\Documents\Sem 3\Data Structure and Algorithm\program\GroceryInventorySystem\Debug\GroceryInventorySystem.exe

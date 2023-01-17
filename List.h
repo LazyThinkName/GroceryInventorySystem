@@ -1,5 +1,8 @@
+// MUSTAFA BIN JAMIL
+
 #pragma once
 #include <string>
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <Windows.h>
@@ -17,6 +20,43 @@ private:
 		t data;
 		Node* link;
 	};
+
+	struct Node* mid_node(Node* start, Node* end) { // node for middle node
+		if (start == NULL)
+			return NULL;
+		Node* slow = start;
+		Node* fast = start->link;
+		while (fast != end) {
+			fast = fast->link;
+			if (fast != end) {
+				slow = slow->link;
+				fast = fast->link;
+			}
+		}
+		return slow;
+	};
+		
+	struct Node* binarySearch(Node* head, string value) { // search the items using binarySearch
+
+		Node* start = head;
+		Node* last = NULL;
+		do {
+			Node* mid = mid_node(start, last);
+			if (mid == NULL) {
+				return NULL;
+			}
+			if (mid->data.getItemID() == value) {
+				return mid;
+			}
+			else if (mid->data.getItemID() < value) {
+				start = mid->link;
+			}
+			else {
+				last = mid;
+			}
+		} while (last == NULL || last != start);
+	};
+	
 	Node* pHead;
 	Node* pCurr;
 	Node* pTail;
@@ -36,6 +76,10 @@ public:
 	bool restockItems(string);
 	void readFromFile();
 	void writeToFile();
+	void searchID(string target, int searchBy, vector<Item>& searchResult, bool& found);
+	void searchItem(string target, int searchBy, vector<Item>& searchResult, bool& found);//function to search item by item Name/Type
+	void searchItem(double min, double max, vector<Item>& searchResult, bool& found);//overloading function, function to search item by price
+	void searchItem(int min, int max, vector<Item>& searchResult, bool& found);//overloading function, function to search item by quantity
 };
 #endif
 
@@ -52,13 +96,15 @@ List<t>::List() {
 template <class t>
 List<t>::~List() {}
 
+
+// MUSTAFA BIN JAMIL
 template <class t>
 void List<t>::addItem() {
 	Node* pNew = new Node; // create a new node to store data
 	Item item;
-	int aDay, aMonth, aYear, eDay, eMonth, eYear,quantity;
+	int aDay, aMonth, aYear, eDay, eMonth, eYear, quantity;
 	double price;
-	string name, Id,aDate,eDate;
+	string name, Id, aDate, eDate;
 	char type;
 
 	cout << "Please enter the item name: "; // allow user to input the name
@@ -87,7 +133,7 @@ void List<t>::addItem() {
 		item.setItemType("Drink");
 	}
 	item.setItemID(Id);
-	
+
 	cout << "\nPlease enter the arrival date\n" // allow user to input the arrival date
 		<< "Year: ";
 	cin >> aYear;
@@ -115,11 +161,11 @@ void List<t>::addItem() {
 	cin >> aDay;
 	if (aMonth == 2 || aMonth == 4 || aMonth == 6 || aMonth == 9 || aMonth == 11) // check the validation of day for month those do not contain 31 days
 	{
-		if (aMonth == 2 ) // check the validation of day for February
+		if (aMonth == 2) // check the validation of day for February
 		{
 			if (aYear % 2 == 0) // check the validation of day for February of leap year
 			{
-				while (cin.fail() || aDay < 0 || aDay > 29) 
+				while (cin.fail() || aDay < 0 || aDay > 29)
 				{
 					cin.clear();
 					cin.ignore(10, '\n');
@@ -130,7 +176,7 @@ void List<t>::addItem() {
 			}
 			else // check the validation of day for February if the year is not the leap year
 			{
-				while (cin.fail() || aDay < 0 || aDay > 28) 
+				while (cin.fail() || aDay < 0 || aDay > 28)
 				{
 					cin.clear();
 					cin.ignore(10, '\n');
@@ -139,7 +185,7 @@ void List<t>::addItem() {
 					cin >> aDay;
 				}
 			}
-			
+
 		}
 		else // check the validation of day for month those do not contain 31 days except February
 		{
@@ -166,8 +212,8 @@ void List<t>::addItem() {
 	}
 	aDate = to_string(aDay) + "/" + to_string(aMonth) + "/" + to_string(aYear); // convert the int date to string
 	item.setArrivalDate(aDate);
-	
-	
+
+
 	cout << "\nPlease enter the expired date\n" // allow user to input the expired date
 		<< "Year: ";
 	cin >> eYear;
@@ -193,7 +239,7 @@ void List<t>::addItem() {
 		}
 		if (eYear == aYear) // check the validation of month so the month is more than arrival date if the year is the same
 		{
-			while (eMonth < aMonth) 
+			while (eMonth < aMonth)
 			{
 				cin.clear();
 				cin.ignore(10, '\n');
@@ -214,7 +260,7 @@ void List<t>::addItem() {
 			{
 				do
 				{
-					if (cin.fail() || eDay < 0 || eDay > 29) 
+					if (cin.fail() || eDay < 0 || eDay > 29)
 					{
 						cin.clear();
 						cin.ignore(10, '\n');
@@ -269,7 +315,7 @@ void List<t>::addItem() {
 		}
 		else // check the validation of day for month those not contain 31 days except February
 		{
-			do 
+			do
 			{
 				if (cin.fail() || eDay < 1 || eDay > 30)
 				{
@@ -281,7 +327,7 @@ void List<t>::addItem() {
 				}
 				if (eYear == aYear)  // check the validation of day if year and month is same
 				{
-					if (eMonth == aMonth) 
+					if (eMonth == aMonth)
 					{
 						while (eDay < aDay)
 						{
@@ -310,7 +356,7 @@ void List<t>::addItem() {
 			}
 			if (eYear == aYear) // check the validation of day if year and month is same
 			{
-				if (eMonth == aMonth) 
+				if (eMonth == aMonth)
 				{
 					while (eDay < aDay)
 					{
@@ -331,16 +377,20 @@ void List<t>::addItem() {
 	cin >> price;
 	while (cin.fail() || price <= 0) // check the validation of price
 	{
+		cin.clear();
+		cin.ignore(10,'\n');
 		cout << "Invalid price.\n"
 			<< "Please enter the price(RM) again: RM ";
 		cin >> price;
 	}
 	item.setItemPrice(price);
-	
+
 	cout << "\nPlease enter the quantity of the items: "; // allow user to input the quantity
 	cin >> quantity;
 	while (cin.fail() || quantity < 0) // check the validation of quantity
 	{
+		cin.clear();
+		cin.ignore(10, '\n');
 		cout << "Invalid quantity.\n"
 			<< "Please enter the quantity again: ";
 		cin >> quantity;
@@ -361,7 +411,7 @@ void List<t>::addItem() {
 		pNew->link = pCurr->link;
 		pCurr->link = pNew;
 		pCurr = pNew;
-		if (pCurr == NULL) 
+		if (pCurr == NULL)
 		{
 			pTail = pCurr;
 		}
@@ -369,6 +419,8 @@ void List<t>::addItem() {
 	itemNum++; // increment of item's number
 }
 
+
+// CHAN MANG YONG
 template <class t>
 void List<t>::displayItem() {
 	HANDLE text = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -402,7 +454,7 @@ void List<t>::displayItem() {
 			<< "|" << setfill(' ') << setw(15) << left << pCurr->data.getArrivalDate()
 			<< "|" << setfill(' ') << setw(15) << left << pCurr->data.getExpireDate()
 			<< "|" << setfill(' ') << setw(15) << fixed << setprecision(2) << left << pCurr->data.getItemPrice()
-			<< "|" << setfill(' ') << setw(10) << left  << pCurr->data.getItemQuantity()
+			<< "|" << setfill(' ') << setw(10) << left << pCurr->data.getItemQuantity()
 			<< "|" << endl;
 
 		SetConsoleTextAttribute(text, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN); // change the text back to white colour
@@ -429,6 +481,7 @@ void List<t>::displayItem() {
 		<< endl << endl;
 }
 
+// OOI KHAR NEE
 template <class t>
 void List<t>::sortItems(int condition) {
 	pCurr = pHead;
@@ -449,7 +502,7 @@ void List<t>::sortItems(int condition) {
 					locationMin = pNext;
 					min = pNext->data;
 				}
-				pNext = pNext->link; 
+				pNext = pNext->link;
 			}
 			locationMin->data = pCurr->data;
 			pCurr->data = min;
@@ -474,11 +527,11 @@ void List<t>::sortItems(int condition) {
 					locationMin = pNext;
 					min = pNext->data;
 				}
-				pNext = pNext->link; 
+				pNext = pNext->link;
 			}
 			locationMin->data = pCurr->data;
 			pCurr->data = min;
-			if (pCurr->link == 0) 
+			if (pCurr->link == 0)
 			{
 				break;
 			}
@@ -489,66 +542,66 @@ void List<t>::sortItems(int condition) {
 	{
 		while (pCurr != 0)
 		{
-			locationMin = pCurr;
-			min = locationMin->data;
-			pNext = pCurr->link;
-			while (pNext != 0)
+		locationMin = pCurr;
+		min = locationMin->data;
+		pNext = pCurr->link;
+		while (pNext != 0)
+		{
+			if (pNext->data.getItemPrice() < min.getItemPrice()) // compared between two item's price
 			{
-				if (pNext->data.getItemPrice() < min.getItemPrice()) // compared between two item's price
-				{
-					locationMin = pNext;
-					min = pNext->data;
-				}
-				pNext = pNext->link;
+				locationMin = pNext;
+				min = pNext->data;
 			}
-			locationMin->data = pCurr->data;
-			pCurr->data = min;
-			if (pCurr->link == 0) {
-				break;
-			}
-			pCurr = pCurr->link;
+			pNext = pNext->link;
+		}
+		locationMin->data = pCurr->data;
+		pCurr->data = min;
+		if (pCurr->link == 0) {
+			break;
+		}
+		pCurr = pCurr->link;
 		}
 	}
 	else if (condition == 4) // sort the items based on item's quantity
 	{
-		bool cont = true;
-		while (pCurr != 0) 
+	while (pCurr != 0)
+	{
+		locationMin = pCurr;
+		min = locationMin->data;
+		pNext = pCurr->link;
+		while (pNext != 0)
 		{
-			locationMin = pCurr;
-			min = locationMin->data;
-			pNext = pCurr->link;
-			while (pNext != 0)
+			if (pNext->data.getItemQuantity() < min.getItemQuantity())	 // compared between two item's quantity
 			{
-				if (pNext->data.getItemQuantity() < min.getItemQuantity()) // compared between two item's quantity
-				{
-					locationMin = pNext;
-					min = pNext->data;
-				}
-				pNext = pNext->link;
+				locationMin = pNext;
+				min = pNext->data;
 			}
-			locationMin->data = pCurr->data;
-			pCurr->data = min;
-			if (pCurr->link == 0) {
-				break;
-			}
-			pCurr = pCurr->link;
+			pNext = pNext->link;
 		}
+		locationMin->data = pCurr->data;
+		pCurr->data = min;
+		if (pCurr->link == 0) {
+			break;
+		}
+		pCurr = pCurr->link;
+	}
 	}
 	else {
-		cout << "Invalid";
+	cout << "Invalid";
 	}
-	
+
 }
 
+// OOI KHAR NEE
 template <class t>
 bool List<t>::restockItems(string itemRestock) {
 	int quantity = 0;
 	pCurr = pHead;
-	if (pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock) {
-		cout << "Enter the quantity to restock: ";
+	if (pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock) { // check if the item name or item quantity match with the input(itemRestock)
+		cout << "Enter the quantity to restock: "; // allow user to input the quantity to restock
 		cin >> quantity;
 		cout << endl;
-		while (cin.fail() || quantity < 5) {
+		while (cin.fail() || quantity < 5) { // check the validation of quantity
 			cin.clear();
 			cin.ignore(10);
 			cout << "Minimum quantity to restock is 5\n\n";
@@ -556,15 +609,15 @@ bool List<t>::restockItems(string itemRestock) {
 			cin >> quantity;
 			cout << endl;
 		}
-		pCurr->data.setItemQuantity(pCurr->data.getItemQuantity() + quantity);
+		pCurr->data.setItemQuantity(pCurr->data.getItemQuantity() + quantity); //update quantity
 		cout << "Successfully updated item quantity!!!" << endl << endl;
 	}
-	while ((pCurr->data.getItemName() != itemRestock || pCurr->data.getItemID() != itemRestock) && pCurr->link != 0) {
+	while ((pCurr->data.getItemName() != itemRestock || pCurr->data.getItemID() != itemRestock) && pCurr->link != 0) { //traverse the list of item(s) to find the match
 		pCurr = pCurr->link;
-		if (pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock) {
-			cout << "Enter the quantity to restock: ";
+		if (pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock) { // check if the item name or item quantity match with the input(itemRestock)
+			cout << "Enter the quantity to restock: "; // allow user to input the quantity to restock
 			cin >> quantity;
-			while (cin.fail() || quantity < 5) {
+			while (cin.fail() || quantity < 5) { // check the validation of quantity
 				cin.clear();
 				cin.ignore(10);
 				cout << "Minimum quantity to restock is 5\n\n";
@@ -572,19 +625,122 @@ bool List<t>::restockItems(string itemRestock) {
 				cin >> quantity;
 				cout << endl;
 			}
-			pCurr->data.setItemQuantity(pCurr->data.getItemQuantity() + quantity);
+			pCurr->data.setItemQuantity(pCurr->data.getItemQuantity() + quantity); //update quantity
 			cout << "Successfully updated item quantity!!!" << endl << endl;
-			break;
+			break; // stop the loop if the item name or item quantity match with the input(itemRestock)
 		}
 	}
-	if ((pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock)) {
+	if ((pCurr->data.getItemName() == itemRestock || pCurr->data.getItemID() == itemRestock)) { // item match
 		return true;
 	}
-	else {
+	else { // item(s) do not match
 		return false;
 	}
 }
 
+template <class t>
+void List<t>::searchID(string target, int searchBy, vector<Item>& searchResult, bool& found) { // search the item by item id
+	sortItems(1); // sort the items
+	pCurr = pHead; // reset the pCurr position
+	Node* pFound = new Node;
+	pFound = binarySearch(pCurr, target); // binary search
+	if (pFound == NULL)
+	{
+		found = false;
+	}
+	else {
+		found = true;
+		searchResult.push_back(pFound->data);
+	}
+}
+
+// MARIA MAGDELENA MASAN
+template <class t>
+void List<t>::searchItem(string target, int searchBy, vector<Item>& searchResult, bool& found)
+{
+	found = false;
+	Node* pPrev = pHead;
+	Node* pTraverse = pHead;
+	Node* pTemp = new Node;
+	if (searchBy == 2)//search item by item name
+	{
+		//using probability searching algorithm
+		while (pTraverse->link != 0 && target != pTraverse->data.getItemName())
+		{
+			pPrev = pTraverse;
+			pTraverse = pTraverse->link;
+		}
+
+		if (target == pTraverse->data.getItemName())
+		{
+			found = true;
+			searchResult.push_back(pTraverse->data);
+			if (pTraverse != pHead)
+			{
+				//exchange founded item with the item immediately before it in the list
+				pTemp->data = pPrev->data;
+				pPrev->data = pTraverse->data;
+				pTraverse->data = pTemp->data;
+			}
+		}
+		else
+		{
+			found = false;
+		}
+	}
+	else //search items by item type
+	{
+		if (target == "F" || target == "f")
+		{
+			target = "Food";
+		}
+		else if (target == "D" || target == "d")
+		{
+			target = "Drink";
+		}
+
+		for (Node* pTraverse = pHead; pTraverse != 0; pTraverse = pTraverse->link)
+		{
+			if (pTraverse->data.getItemType() == target)
+			{
+				found = true;
+				searchResult.push_back(pTraverse->data);
+			}
+		}
+	}
+}
+
+// MARIA MAGDELENA MASAN
+template <class t>
+void List<t>::searchItem(double min, double max, vector<Item>& searchResult, bool& found)//search items by minimum and maximum price
+{
+	found = false;
+	for (Node* pTraverse = pHead; pTraverse != 0; pTraverse = pTraverse->link)
+	{
+		if (pTraverse->data.getItemPrice() >= min && pTraverse->data.getItemPrice() <= max)
+		{
+			found = true;
+			searchResult.push_back(pTraverse->data);
+		}
+	}
+}
+
+// MARIA MAGDELENA MASAN
+template <class t>
+void List<t>::searchItem(int min, int max, vector<Item>& searchResult, bool& found)//search items by minimum and maximum quantity
+{
+	found = false;
+	for (Node* pTraverse = pHead; pTraverse != 0; pTraverse = pTraverse->link)
+	{
+		if (pTraverse->data.getItemQuantity() >= min && pTraverse->data.getItemQuantity() <= max)
+		{
+			found = true;
+			searchResult.push_back(pTraverse->data);
+		}
+	}
+}
+
+// CHAN MANG YONG
 template <class t>
 void List<t>::readFromFile() {
 	ifstream itemFile; // create variable for the input file
@@ -593,14 +749,15 @@ void List<t>::readFromFile() {
 	itemFile.open("item.csv", ios::in); // open input file
 	Node* pNew = new Node; // create a new node
 	pCurr = pHead; // reset the current node to the first node
-	
+
 
 	if (itemFile.fail()) {
-		cout << "Error Opening File" << endl << endl;
+		cout << "First Time User" << endl << endl;
+		return;
 	}
 
 	getline(itemFile, skip); // skip the first line of the item excel file
-	while (!itemFile.eof()) { // read all data in the item excel file
+	while (!itemFile.eof() ) { // read all data in the item excel file
 		getline(itemFile, ID, ',');
 		getline(itemFile, name, ',');
 		getline(itemFile, type, ',');
@@ -608,7 +765,7 @@ void List<t>::readFromFile() {
 		getline(itemFile, expDate, ',');
 		getline(itemFile, price, ',');
 		getline(itemFile, qty, '\n');
-		
+
 		double priceNum = stod(price); // convert price and quantity to number
 		int qtyNum = stoi(qty);
 
@@ -646,15 +803,14 @@ void List<t>::readFromFile() {
 		pNew = new Node;
 		itemNum++;
 	}
-
 	itemFile.close(); // close the input file
 }
 
-
+// CHAN MANG YONG
 template <class t>
 void List<t>::writeToFile() { // write output to item excel file
 	ofstream itemFile; // create variable for output file
-	itemFile.open("item.csv",ios::out); // open item excel file in the folder
+	itemFile.open("item.csv", ios::out); // open item excel file in the folder
 	itemFile << "ID" << "," // write the title in the first line
 		<< "Name" << ","
 		<< "Type" << ","
@@ -666,25 +822,26 @@ void List<t>::writeToFile() { // write output to item excel file
 	pCurr = pHead; // reset the current node to the first node
 
 	while (pCurr != 0) { // insert all the data into item excel file
-		itemFile << pCurr->data.getItemID() << "," 
+		itemFile << pCurr->data.getItemID() << ","
 			<< pCurr->data.getItemName() << ","
 			<< pCurr->data.getItemType() << ","
 			<< pCurr->data.getArrivalDate() << ","
 			<< pCurr->data.getExpireDate() << ","
-			<< pCurr->data.getItemPrice() << ",";
-			if (pCurr->link != 0) {
-				itemFile << pCurr->data.getItemQuantity() << endl; // if the next node is not empty, proceed to next line
-			}
-			else
-			{
-				itemFile << pCurr->data.getItemQuantity(); // if the next node is empty, stop at this line
-			}
-			pCurr = pCurr->link; // move the current node to next node
-		
+			<< fixed << setprecision(2)<< pCurr->data.getItemPrice() << ",";
+		if (pCurr->link != 0) {
+			itemFile << pCurr->data.getItemQuantity() << endl; // if the next node is not empty, proceed to next line
+		}
+		else
+		{
+			itemFile << pCurr->data.getItemQuantity(); // if the next node is empty, stop at this line
+		}
+		pCurr = pCurr->link; // move the current node to next node
+
 	}
 	itemFile.close(); // close the item excel file
 }
 
+// MUSTAFA BIN JAMIL
 template <class t>
 int List<t>::numberOfItem() {
 	return itemNum;
@@ -699,5 +856,3 @@ template <class t>
 int List<t>::numOfDrink() {
 	return drinkNum;
 }
-
-
